@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicación del Inspector</title>
+<link rel="stylesheet" href="styles.css">
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 90%;
+        margin: 0 auto;
+        max-width: 600px;
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        line-height: 1.5;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+    }
+
+    .form-actions button {
+        padding: 10px 15px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #5cb85c;
+        color: white;
+        cursor: pointer;
+    }
+
+    .form-actions button:hover {
+        background-color: #4cae4c;
+    }
+
+    .form-actions button[type="button"] {
+        background-color: #d9534f;
+    }
+
+    .form-actions button[type="button"]:hover {
+        background-color: #c9302c;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+    }
+</style>
+</head>
+
+
+<body>
+<div class="container">
+    <h1>Aplicación del Inspector</h1>
+    <form id="inspectionForm">
+        <div class="form-group">
+            <label for="lotNumber">Número de Lote:</label>
+            <input type="text" id="lotNumber" name="lotNumber" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="defects">Catalogo Tipos Defectos:</label>
+            <select id="defects" name="defects">
+                <option value="Pieza Rota">Pieza Rota</option>
+                <option value="Falta de Etiqueta">Falta de Etiqueta</option>
+                <option value="Fuga de Líquido">Fuga de Líquido</option>
+                <option value="Color Incorrecto">Color Incorrecto</option>
+                <option value="Tamaño Incorrecto">Tamaño Incorrecto</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="details">Detalles:</label>
+            <textarea id="details" name="details"></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit">Enviar</button>
+            <button type="button" onclick="resetForm()">Cancelar</button>
+        </div>
+    </form>
+</div>
+<script src="script.js"></script>
+</body>
+<Script>
+    document.getElementById('inspectionForm').onsubmit = async function(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe de la manera tradicional
+
+    const formData = new FormData(event.target);
+    const lotNumber = formData.get('lotNumber');
+    const details = formData.get('details');
+    const defects = formData.get('defects');
+
+    // Crear el objeto de defecto que será enviado
+    const defectData = {
+        numeroLote: lotNumber,
+        detalles: details,
+        defectos: defects 
+    };
+
+    try {
+        // Enviar el defecto al servidor usando fetch API
+        const response = await fetch('http://localhost:8080/ServidorRestManufactura/resources/defectos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(defectData)
+        });
+
+        // Obtener la respuesta del servidor
+        const responseData = await response.json();
+
+        if(response.ok) {
+            console.log('Defecto registrado:', responseData);
+            // Aquí podrías realizar acciones adicionales después de un registro exitoso
+        } else {
+            throw new Error(responseData.message || 'Error al registrar el defecto');
+        }
+    } catch (error) {
+        console.error('Ocurrió un error:', error);
+    }
+};
+
+
+function resetForm() {
+    document.getElementById('inspectionForm').reset();
+}
+
+</script>
+</html>
