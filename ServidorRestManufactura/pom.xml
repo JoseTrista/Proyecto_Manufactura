@@ -45,12 +45,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ServicioGestorDefecto</artifactId>
+            <artifactId>DominioManufactura</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>DominioManufactura</artifactId>
+            <artifactId>ServicioGestorDefecto</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

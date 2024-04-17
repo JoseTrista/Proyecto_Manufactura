@@ -1,48 +1,54 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-
 package com.mycompany.notificationservice;
 
-import com.rabbitmq.client.CancelCallback;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 /**
  *
  * @author jctri
  */
 public class SistemaERP {
 
-    private static final String QUEUE_NAME = "cola_Defectos";
+//    private static final String QUEUE_NAME = "cola_Defectos";
+    private static final String EXCHANGE_NAME = "defectos_exchange";
+    private static final String ROUTING_KEY = "defecto";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost"); 
+        factory.setHost("localhost");
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
 
-        try {
+        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+        String queueName = channel.queueDeclare().getQueue();
+        channel.queueBind(queueName, EXCHANGE_NAME, ROUTING_KEY);
 
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-            
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            System.out.println(" [*] Esperando mensajes en " + QUEUE_NAME + ". Para salir, presione CTRL+C");
+        System.out.println(" [*] Esperando mensajes en " + queueName);
 
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                System.out.println(" [x] Recibido '" + message + "'");
-            };
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" [x] Recibido: '" + ROUTING_KEY + "':'" + message + "'");
+        };
 
-//            CancelCallback cancelCallback = consumerTag -> {
-//                System.out.println(" [x] Cancelado '" + consumerTag + "'");
-//            };
-
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback,consumerTag -> {});
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al conectarse a RabbitMQ");
-        }
+        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
     }
+      
+    
+    
+//    private static void doWork(String task) throws InterruptedException {
+//        for (char ch : task.toCharArray()) {
+//            if (ch == '.') {
+//                Thread.sleep(1000);
+//            }
+//        }
+//    }
+    
 }
