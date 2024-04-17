@@ -1,5 +1,5 @@
 create database manufactura;
-
+# drop database manufactura;
 use  manufactura;
 
 CREATE TABLE Defectos (
