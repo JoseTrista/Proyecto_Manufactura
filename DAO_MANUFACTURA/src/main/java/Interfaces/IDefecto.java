@@ -5,6 +5,8 @@
 package Interfaces;
 
 import com.mycompany.dominiprueba.Defecto;
+import com.mycompany.dominiprueba.Pieza;
+import java.util.List;
 
 /**
  *
@@ -12,4 +14,5 @@ import com.mycompany.dominiprueba.Defecto;
  */
 public interface IDefecto {
     public Defecto agregarDefecto(Defecto defecto);
+    public List<Pieza> consultarTodasLasPiezas();
 }

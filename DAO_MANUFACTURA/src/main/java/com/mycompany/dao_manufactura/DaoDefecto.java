@@ -6,12 +6,15 @@ package com.mycompany.dao_manufactura;
 
 import Interfaces.IDefecto;
 import com.mycompany.dominiprueba.Defecto;
+import com.mycompany.dominiprueba.Pieza;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -41,11 +44,12 @@ public class DaoDefecto implements IDefecto{
     @Override
     public Defecto agregarDefecto(Defecto defecto) {
       try (Connection connection = obtenerConexion()) {
-            String query = "INSERT INTO Defectos (numeroLote, detalles, defectos) VALUES (?, ?, ?)";
+            String query = "INSERT INTO Defectos (numeroLote, detalles, defectos, id_pieza) VALUES (?, ?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 pstmt.setString(1, defecto.getNumeroLote());
                 pstmt.setString(2, defecto.getDetalles());
                 pstmt.setString(3, defecto.getDefectos());
+                pstmt.setInt(4, defecto.getId_pieza());
                 pstmt.executeUpdate();
 
                 try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -61,5 +65,25 @@ public class DaoDefecto implements IDefecto{
             e.printStackTrace();
             return null;
         }
+    }
+    
+    @Override
+    public List<Pieza> consultarTodasLasPiezas() {
+        List<Pieza> piezas = new ArrayList<>();
+        String query = "SELECT id, nombrePieza, precio FROM Pieza";
+        try (Connection connection = obtenerConexion();
+             PreparedStatement pstmt = connection.prepareStatement(query)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Pieza pieza = new Pieza();
+                pieza.setId(rs.getLong("id"));
+                pieza.setNombrePieza(rs.getString("nombrePieza"));
+                pieza.setPrecio(rs.getInt("precio"));
+                piezas.add(pieza);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al consultar las piezas: " + e.getMessage());
+        }
+        return piezas;
     }
 }

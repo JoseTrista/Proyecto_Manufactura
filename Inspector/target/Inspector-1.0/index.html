@@ -39,7 +39,7 @@
         line-height: 1.5;
         border: 1px solid #ddd;
         border-radius: 4px;
-        box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+        box-sizing: border-box; 
     }
 
     .form-actions button {
@@ -81,6 +81,17 @@
         </div>
         
         <div class="form-group">
+            <label for="pieces">Catalogo Piezas:</label>
+            <select id="pieces" name="pieces">
+                <option value="1" >Pieza A</option>
+                <option value="2" >Pieza B</option>
+                <option value="3" >Pieza C</option>
+                <option value="4" >Pieza D</option>
+                <option value="5" >Pieza E</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
             <label for="defects">Catalogo Tipos Defectos:</label>
             <select id="defects" name="defects">
                 <option value="Pieza Rota">Pieza Rota</option>
@@ -112,17 +123,20 @@
     const lotNumber = formData.get('lotNumber');
     const details = formData.get('details');
     const defects = formData.get('defects');
+    const pieces = parseInt(formData.get('pieces'), 10);
 
     // Crear el objeto de defecto que será enviado
     const defectData = {
         numeroLote: lotNumber,
         detalles: details,
-        defectos: defects 
+        defectos: defects, 
+        id_pieza: pieces
     };
 
     try {
         // Enviar el defecto al servidor usando fetch API
-        const response = await fetch('http://localhost:8080/ServidorRestManufactura/resources/defectos', {
+        console.log(defectData);
+        const response = await fetch('http://localhost:8080/GestorEventosManufactura/resources/defectos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
