@@ -86,4 +86,30 @@ public class DaoDefecto implements IDefecto{
         }
         return piezas;
     }
+
+    @Override
+    public int consultarNumPiezasPorDefecto(String defecto) {
+        int numPiezas = 0;
+        String query = "SELECT count(id) AS piezasR FROM Defectos WHERE defectos LIKE %?%";
+        try (Connection connection = obtenerConexion(); PreparedStatement pstmt = connection.prepareStatement(query)) {
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                numPiezas = rs.getInt("piezasR");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al consultar las piezas: " + e.getMessage());
+        }
+        return numPiezas;    }
+
+    @Override
+    public double consultarCostosDefectos(String defecto) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String consultarDetallePiezas(String defecto) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    
 }
