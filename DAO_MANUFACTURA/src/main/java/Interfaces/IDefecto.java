@@ -14,8 +14,9 @@ import java.util.List;
  */
 public interface IDefecto {
     public Defecto agregarDefecto(Defecto defecto);
+//    public List<Defecto> consultarTodoDefecto(String defecto);
     public List<Pieza> consultarTodasLasPiezas();
     public int consultarNumPiezasPorDefecto(String defecto);
     public double consultarCostosDefectos(String defecto);
-    public String consultarDetallePiezas(String defecto);
+    public List<String> consultarDetallePiezas(String defecto);
 }

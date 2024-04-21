@@ -1,112 +1,123 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Acceso a Datos USA</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-    font-family: Arial, sans-serif;
-}
+    <head>
+        <meta charset="UTF-8">
+        <title>Acceso a Datos USA</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
 
-.search-container {
-    margin: 20px;
-    display: flex;
-    align-items: center;
-}
+            .search-container {
+                margin: 20px;
+                display: flex;
+                align-items: center;
+            }
 
-select {
-    padding: 8px 10px;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
+            select {
+                padding: 8px 10px;
+                margin-right: 10px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
 
-button {
-    padding: 8px 16px;
-    background-color: #007BFF;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
+            button {
+                padding: 8px 16px;
+                background-color: #007BFF;
+                border: none;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+            }
 
-button:hover {
-    background-color: #0056b3;
-}
+            button:hover {
+                background-color: #0056b3;
+            }
 
-.table-container {
-    margin: 20px;
-}
+            .table-container {
+                margin: 20px;
+            }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
 
-table, th, td {
-    border: 1px solid #ccc;
-}
+            table, th, td {
+                border: 1px solid #ccc;
+            }
 
-th, td {
-    padding: 8px;
-    text-align: left;
-}
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
 
-thead {
-    background-color: #f2f2f2;
-}
-    </style>
-</head>
+            thead {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
 
-<body>
-    <div class="search-container">
-        <select id="comboBox">
-            <option value="Pieza Rota">Pieza Rota</option>
-            <option value="Falta de Etiqueta">Falta de Etiqueta</option>
-            <option value="Fuga de Liquido">Fuga de Liquido</option>
-            <option value="Color Incorrecto">Color Incorrecto</option>
-            <option value="Tamanio Incorrecto">Tamanio Incorrecto</option>
-        </select>
-        <button onclick="buscar()">Buscar</button>
-    </div>
-    <div class="table-container">
-        <table id="resultados">
-            <thead>
-                <tr>
-                    <th>Nombre Pieza</th>
-                    <th>Costo Pesos(MX)</th>
-                    <th>Costo Dolares(USA)</th>
-                    <th>Detalle</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Los resultados de la búsqueda se insertarán aquí -->
-            </tbody>
-        </table>
-    </div>
+    <body>
+        <div class="search-container">
+            <select id="comboBox">
+                <option value="Pieza Rota">Pieza Rota</option>
+                <option value="Falta de Etiqueta">Falta de Etiqueta</option>
+                <option value="Fuga de Liquido">Fuga de Liquido</option>
+                <option value="Color Incorrecto">Color Incorrecto</option>
+                <option value="Tamanio Incorrecto">Tamanio Incorrecto</option>
+            </select>
+            <button onclick="buscar()">Buscar</button>
+        </div>
+        <div class="table-container">
+            <table id="resultados">
+                <thead>
+                    <tr>
+                        <th>Nombre Defecto</th>
+                        <th>Costo Pesos(MX)</th>
+                        <th>Costo Dolares(USA)</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los resultados de la búsqueda se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
 
-    <script src="script.js"></script>
-</body>
-<script>
-    function buscar() {
-    // Ejemplo de datos a cargar en la tabla, normalmente obtendrías estos datos a través de una API
-    const datosEjemplo = [
-        { col1: "Dato 1", col2: "Dato 2", col3: "Dato 3", col4: "Dato 4" },
-        { col1: "Dato 5", col2: "Dato 6", col3: "Dato 7", col4: "Dato 8" }
-    ];
+        <script>
+            function buscar() {
+                const defectoSeleccionado = document.getElementById('comboBox').value;
+                fetch(`http://localhost:8080/GestorReporte/resources/reportes/${encodeURIComponent(defectoSeleccionado)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error en la respuesta del servidor: ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                         const tbody = document.getElementById('resultados').getElementsByTagName('tbody')[0];
+                         tbody.innerHTML = ''; // Limpiar los resultados anteriores
 
-    const tbody = document.getElementById('resultados').getElementsByTagName('tbody')[0];
-    tbody.innerHTML = ''; // Limpiar los resultados anteriores
+                             // Si los 'detalles' es un array y deseas mostrar cada detalle en una nueva fila
+                         data.detalles.forEach(detalle => {
+                           const fila = tbody.insertRow();
+                         fila.insertCell(0).textContent = data.defecto;
+                         fila.insertCell(1).textContent = data.numPiezas;
+                         fila.insertCell(2).textContent = (data.costoPorPiezas * 18).toFixed(2); // Conversión a dólares
+                         fila.insertCell(3).textContent = detalle;
+                      });
+                         })
+                        .catch(error => {
+                            console.error('Error al obtener los datos:', error);
+                        });
+            }
 
-    // Añadir nuevos resultados
-    datosEjemplo.forEach(dato => {
-        const fila = tbody.insertRow();
-        fila.insertCell(0).textContent = dato.col1;
-        fila.insertCell(1).textContent = dato.col2;
-        fila.insertCell(2).textContent = dato.col3;
-        fila.insertCell(3).textContent = dato.col4;
-    });
-}
-</script>
+        </script>
+    </body>
 </html>

@@ -90,8 +90,9 @@ public class DaoDefecto implements IDefecto{
     @Override
     public int consultarNumPiezasPorDefecto(String defecto) {
         int numPiezas = 0;
-        String query = "SELECT count(id) AS piezasR FROM Defectos WHERE defectos LIKE %?%";
+        String query = "SELECT count(id) AS piezasR FROM Defectos WHERE defectos LIKE ?";
         try (Connection connection = obtenerConexion(); PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, "%"+defecto+"%");
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 numPiezas = rs.getInt("piezasR");
@@ -99,16 +100,39 @@ public class DaoDefecto implements IDefecto{
         } catch (SQLException e) {
             System.out.println("Error al consultar las piezas: " + e.getMessage());
         }
-        return numPiezas;    }
-
-    @Override
-    public double consultarCostosDefectos(String defecto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return numPiezas;    
     }
 
     @Override
-    public String consultarDetallePiezas(String defecto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public double consultarCostosDefectos(String defecto) {
+        double costosDefectos = 0;
+        String query = "SELECT SUM(p.precio) AS costoTotal FROM Defectos d INNER JOIN Pieza p ON d.id_pieza = p.id WHERE d.defectos LIKE ?";
+        try (Connection connection = obtenerConexion(); PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, "%" + defecto + "%");
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                costosDefectos = rs.getDouble("costoTotal");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al consultar los costos de los defectos: " + e.getMessage());
+        }
+        return costosDefectos;
+    }
+
+    @Override
+    public List<String> consultarDetallePiezas(String defecto) {
+        List<String> detalles = new ArrayList<>();
+        String query = "SELECT d.detalles FROM Defectos d WHERE d.defectos LIKE ?";
+        try (Connection connection = obtenerConexion(); PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, "%" + defecto + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+               detalles.add(rs.getString("detalles"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al consultar los detalles de las piezas: " + e.getMessage());
+        }
+        return detalles;
     }
     
     

@@ -46,6 +46,7 @@ public class ReportesResource {
      * Retrieves representation of an instance of
      * com.mycompany.gestorreporte.ReportesResource
      *
+     * @param defecto
      * @return an instance of java.lang.String
      */
     @GET
@@ -59,6 +60,7 @@ public class ReportesResource {
 
         ReporteDTO reporte = new ReporteDTO(defecto, numPiezas, costosPerdidas, detalles);
 
+        System.out.println(reporte);
         return Response.status(Response.Status.CREATED).entity(reporte).build();
     }
 
