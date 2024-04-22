@@ -41,7 +41,7 @@ public class DefectosResource {
      * Creates a new instance of DefectosResource
      */
     public DefectosResource() {
-        defectoDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "Movagro123.,");
+        defectoDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "1234");
         rabbitMQPublisher = new RabbitMQPublisher("localhost", "cola_Defectos");
     }
 

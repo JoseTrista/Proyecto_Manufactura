@@ -34,14 +34,14 @@ public class RPCDefectos {
 
                 String response = null;
                 Gson gson = new Gson();
-                IDefecto defectosDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "Movagro123.,");
+                IDefecto defectosDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "1234");
 
                 String message = new String(delivery.getBody(), "UTF-8");
                 String[] parts = message.split(":");
                 String methodName = parts[0];
                 String defecto = parts[1];
 
-//IDefecto defectosDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "Movagro123.,");
+
                 System.out.println(methodName);
                 if (methodName.equalsIgnoreCase("prueba")) {
                     response = "sillego";

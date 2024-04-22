@@ -136,7 +136,7 @@
     try {
         // Enviar el defecto al servidor usando fetch API
         console.log(defectData);
-        const response = await fetch('http://localhost:8080/GestorEventosManufactura/resources/defectos', {
+        const response = await fetch('http://localhost:8080/GestorDefectos/resources/defectos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

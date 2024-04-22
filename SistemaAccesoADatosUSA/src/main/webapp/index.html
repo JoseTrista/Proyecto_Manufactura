@@ -74,7 +74,8 @@
                 <thead>
                     <tr>
                         <th>Nombre Defecto</th>
-                        <th>Costo Pesos(MX)</th>
+                        <th>Número de piezas</th>
+                         <th>Costo Pesos</th>
                         <th>Costo Dolares(USA)</th>
                         <th>Detalle</th>
                     </tr>
@@ -109,8 +110,9 @@
                            const fila = tbody.insertRow();
                          fila.insertCell(0).textContent = data.defecto;
                          fila.insertCell(1).textContent = data.numPiezas;
-                         fila.insertCell(2).textContent = (data.costoPorPiezas * 18).toFixed(2); // Conversión a dólares
-                         fila.insertCell(3).textContent = detalle;
+                         fila.insertCell(2).textContent = data.costoPorPiezas;  
+                         fila.insertCell(3).textContent = (data.costoPorPiezas /17.07).toFixed(2); // Conversión a dólares
+                         fila.insertCell(4).textContent = detalle;
                       });
                          })
                         .catch(error => {
