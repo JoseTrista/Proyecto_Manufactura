@@ -34,7 +34,7 @@ public class RPCDefectos {
 
                 String response = null;
                 Gson gson = new Gson();
-                IDefecto defectosDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "1234");
+                IDefecto defectosDAO = new DaoDefecto("localhost", "3306", "manufactura", "root", "Movagro123.,");
 
                 String message = new String(delivery.getBody(), "UTF-8");
                 String[] parts = message.split(":");
