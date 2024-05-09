@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aplicación del Inspector</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="styles.css">
 
 <style>
@@ -134,12 +135,31 @@
     };
 
     try {
-        // Enviar el defecto al servidor usando fetch API
+        // Solicitar un token al servidor
+        const tokenResponse = await fetch('http://localhost:8080/GestorDefectos/resources/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user: 'JC'}) // Asegúrate de cambiar estos valores
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (!tokenResponse.ok) {
+            throw new Error(tokenData.message || 'Error al obtener el token');
+        }
+
+        const token = tokenData.token; // Asumiendo que el token está en la propiedad 'token'
+        console.log(token);
+
+        // Enviar el defecto al servidor usando fetch API con el token obtenido
         console.log(defectData);
         const response = await fetch('http://localhost:8080/GestorDefectos/resources/defectos', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(defectData)
         });
@@ -149,7 +169,11 @@
 
         if(response.ok) {
             console.log('Defecto registrado:', responseData);
-            // Aquí podrías realizar acciones adicionales después de un registro exitoso
+            Swal.fire({
+                  title: "Excelente!",
+                  text: "El Defecto ha sido Enviado!",
+                  icon: "success"
+            });
         } else {
             throw new Error(responseData.message || 'Error al registrar el defecto');
         }
