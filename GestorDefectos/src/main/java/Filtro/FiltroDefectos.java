@@ -108,18 +108,17 @@ public class FiltroDefectos implements Filter {
         String authHeader = httpRequest.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("Authorization header missing or invalid");
+            httpResponse.getWriter().write("Falta encabezado de autenticacion o invalido");
             return;
         }
 
-        String token = authHeader.substring(7); // Extrae el token sin "Bearer "
+        String token = authHeader.substring(7);
         try {
             servicioJWT.verificarToken(token);
             chain.doFilter(request, response);
         } catch (JWTVerificationException exception){
-            // Token inválido, maneja el error
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("Invalid token");
+            httpResponse.getWriter().write("Token invalido");
         }
     }
 

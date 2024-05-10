@@ -32,6 +32,11 @@
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ServicioJWT</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <build>

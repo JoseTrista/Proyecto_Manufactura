@@ -1,6 +1,9 @@
 com\mycompany\rabbitmq\RabbitPublisher.class
+Token\Mensaje.class
+Filtro\FiltroUSA.class
 com\mycompany\gestorreporte\JakartaRestConfiguration.class
 com\mycompany\gestorreporte\ReportesResource.class
 com\mycompany\gestorreporte\resources\JakartaEE91Resource.class
 com\mycompany\rabbitmq\DefectosDAO.class
 com\mycompany\rabbitmq\ReporteDTO.class
+com\mycompany\gestorreporte\AutenticarResource.class

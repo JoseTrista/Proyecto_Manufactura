@@ -75,7 +75,7 @@
                     <tr>
                         <th>Nombre Defecto</th>
                         <th>Número de piezas</th>
-                         <th>Costo Pesos</th>
+                        <th>Costo Pesos</th>
                         <th>Costo Dolares(USA)</th>
                         <th>Detalle</th>
                     </tr>
@@ -85,41 +85,56 @@
                 </tbody>
             </table>
         </div>
-
         <script>
-            function buscar() {
-                const defectoSeleccionado = document.getElementById('comboBox').value;
-                fetch(`http://localhost:8080/GestorReporte/resources/reportes/${encodeURIComponent(defectoSeleccionado)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
+            async function buscar() {
+                try {
+                    // Solicitar un token al servidor
+                    const tokenResponse = await fetch('http://localhost:8080/GestorReporte/resources/autenticar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({user: 'Marki'}) // Asegúrate de cambiar estos valores
+                    });
+
+                    if (!tokenResponse.ok) {
+                        throw new Error('Error al obtener el token: ' + await tokenResponse.text());
                     }
-                })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Error en la respuesta del servidor: ' + response.statusText);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                         const tbody = document.getElementById('resultados').getElementsByTagName('tbody')[0];
-                         tbody.innerHTML = ''; // Limpiar los resultados anteriores
 
-                             // Si los 'detalles' es un array y deseas mostrar cada detalle en una nueva fila
-                         data.detalles.forEach(detalle => {
-                           const fila = tbody.insertRow();
-                         fila.insertCell(0).textContent = data.defecto;
-                         fila.insertCell(1).textContent = data.numPiezas;
-                         fila.insertCell(2).textContent = data.costoPorPiezas;  
-                         fila.insertCell(3).textContent = (data.costoPorPiezas /17.07).toFixed(2); // Conversión a dólares
-                         fila.insertCell(4).textContent = detalle;
-                      });
-                         })
-                        .catch(error => {
-                            console.error('Error al obtener los datos:', error);
-                        });
+                    const tokenData = await tokenResponse.json();
+                    const token = tokenData.token;
+                    console.log(token);
+
+                    // Realizar la búsqueda con el token
+                    const defectoSeleccionado = document.getElementById('comboBox').value;
+                    const response = await fetch(`http://localhost:8080/GestorReporte/resources/reportes/${encodeURIComponent(defectoSeleccionado)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.statusText);
+                    }
+
+                    const data = await response.json();
+                    const tbody = document.getElementById('resultados').getElementsByTagName('tbody')[0];
+                    tbody.innerHTML = ''; // Limpiar los resultados anteriores
+
+                    data.detalles.forEach(detalle => {
+                        const fila = tbody.insertRow();
+                        fila.insertCell(0).textContent = data.defecto;
+                        fila.insertCell(1).textContent = data.numPiezas;
+                        fila.insertCell(2).textContent = data.costoPorPiezas;
+                        fila.insertCell(3).textContent = (data.costoPorPiezas / 17.07).toFixed(2); // Conversión a dólares
+                        fila.insertCell(4).textContent = detalle;
+                    });
+                } catch (error) {
+                    console.error('Error al obtener los datos:', error);
+                }
             }
-
         </script>
     </body>
 </html>
