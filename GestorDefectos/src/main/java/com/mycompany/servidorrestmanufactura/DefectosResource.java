@@ -4,6 +4,7 @@
  */
 package com.mycompany.servidorrestmanufactura;
 
+import Cifrado.Encriptar;
 import Interfaces.IDefecto;
 import com.google.gson.Gson;
 
@@ -54,7 +55,8 @@ public class DefectosResource {
             Defecto aux = defectoDAO.agregarDefecto(defecto);
 
             String mensajeJson = gson.toJson(aux);
-            rabbitMQPublisher.publish(mensajeJson);
+            String encryptedMessage = Encriptar.encrypt(mensajeJson);
+            rabbitMQPublisher.publish(encryptedMessage);
             
 
             return Response.status(Response.Status.CREATED).entity(aux).build();

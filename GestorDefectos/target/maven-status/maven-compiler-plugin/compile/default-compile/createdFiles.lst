@@ -1,4 +1,5 @@
 Token\Mensaje.class
+Cifrado\Encriptar.class
 RPC\RPCDefectos.class
 com\mycompany\servidorrestmanufactura\DefectosResource.class
 com\mycompany\servidorrestmanufactura\resources\JakartaEE91Resource.class

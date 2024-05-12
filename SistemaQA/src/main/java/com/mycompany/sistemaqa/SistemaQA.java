@@ -3,20 +3,21 @@
  */
 package com.mycompany.sistemaqa;
 
+import Cifrado.DesencriptarQA;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author jctri
  */
 public class SistemaQA {
-
-//    private static final String QUEUE_NAME = "cola_Defectos";
      private static final String EXCHANGE_NAME = "defectos_exchange";
      private static final String ROUTING_KEY = "defecto";
 
@@ -33,18 +34,15 @@ public class SistemaQA {
         System.out.println(" [*] Esperando mensajes en " + queueName);
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println(" [x] Recibido: '" + ROUTING_KEY + "':'" + message + "'");
+            try {
+                String encryptedMessage = new String(delivery.getBody(), "UTF-8");
+                String message = DesencriptarQA.decrypt(encryptedMessage);
+                System.out.println(" [x] Recibido: '" + ROUTING_KEY + "':'" + message + "'");
+            } catch (Exception ex) {
+                Logger.getLogger(SistemaQA.class.getName()).log(Level.SEVERE, null, ex);
+            }
         };
 
         channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
     }
-
-//    private static void doWork(String task) throws InterruptedException {
-//        for (char ch : task.toCharArray()) {
-//            if (ch == '.') {
-//                Thread.sleep(1000);
-//            }
-//        }
-//    }
 }

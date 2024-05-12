@@ -4,12 +4,15 @@
  */
 package com.mycompany.notificationservice;
 
+import Cifrado.DesencriptarERP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,21 +37,15 @@ public class SistemaERP {
         System.out.println(" [*] Esperando mensajes en " + queueName);
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println(" [x] Recibido: '" + ROUTING_KEY + "':'" + message + "'");
+            try {
+                String encryptedMessage = new String(delivery.getBody(), "UTF-8");
+                String message = DesencriptarERP.decrypt(encryptedMessage);
+                System.out.println(" [x] Recibido: '" + ROUTING_KEY + "':'" + message + "'");
+            } catch (Exception ex) {
+                Logger.getLogger(SistemaERP.class.getName()).log(Level.SEVERE, null, ex);
+            }
         };
 
         channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
     }
-      
-    
-    
-//    private static void doWork(String task) throws InterruptedException {
-//        for (char ch : task.toCharArray()) {
-//            if (ch == '.') {
-//                Thread.sleep(1000);
-//            }
-//        }
-//    }
-    
 }
