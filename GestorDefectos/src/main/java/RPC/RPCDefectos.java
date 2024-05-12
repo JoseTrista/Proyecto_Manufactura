@@ -4,6 +4,7 @@
  */
 package RPC;
 
+import Cifrado.Encriptar;
 import Interfaces.IDefecto;
 import com.google.gson.Gson;
 import com.mycompany.dao_manufactura.DaoDefecto;
@@ -42,50 +43,33 @@ public class RPCDefectos {
                 String defecto = parts[1];
 
 
-                System.out.println(methodName);
-                if (methodName.equalsIgnoreCase("prueba")) {
-                    response = "sillego";
-                } else if (methodName.equalsIgnoreCase("consultarNumPiezasPorDefecto")) {
-                    int numPiezas = defectosDAO.consultarNumPiezasPorDefecto(defecto);
-                    response = String.valueOf(numPiezas);
-                } else if (methodName.equalsIgnoreCase("consultarCostosDefectos")) {
-                    double costosDefectos = defectosDAO.consultarCostosDefectos(defecto);
-                    response = String.valueOf(costosDefectos);
-                } else if (methodName.equalsIgnoreCase("consultarDetallePiezas")) {
-                    List<String> detallePiezas = defectosDAO.consultarDetallePiezas(defecto);
-                    response = gson.toJson(detallePiezas);
+                try {
+                    System.out.println(methodName);
+                    if (methodName.equalsIgnoreCase("prueba")) {
+                        response = "sillego";
+                    } else if (methodName.equalsIgnoreCase("consultarNumPiezasPorDefecto")) {
+                        int numPiezas = defectosDAO.consultarNumPiezasPorDefecto(defecto);
+                        response = String.valueOf(numPiezas);
+                    } else if (methodName.equalsIgnoreCase("consultarCostosDefectos")) {
+                        double costosDefectos = defectosDAO.consultarCostosDefectos(defecto);
+                        response = String.valueOf(costosDefectos);
+                    } else if (methodName.equalsIgnoreCase("consultarDetallePiezas")) {
+                        List<String> detallePiezas = defectosDAO.consultarDetallePiezas(defecto);
+                        response = gson.toJson(detallePiezas);
+                    }
+                    // Cifra la respuesta antes de enviarla
+                    String encryptedResponse = Encriptar.encrypt(response);
+                    System.out.println("Paquete" + delivery.getProperties().getReplyTo() + " respuesta " + response);
+                    channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, encryptedResponse.getBytes("UTF-8"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    String errorResponse = "Error procesando la solicitud";
+                    channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, errorResponse.getBytes("UTF-8"));
                 }
-//                try {
-//                    switch (methodName.toLowerCase()) {
-//                        case "consultarnumpiezaspordefecto":
-//                            int numPiezas = defectosDAO.consultarNumPiezasPorDefecto(defecto);
-//                            response = String.valueOf(numPiezas);
-//                            break;
-//                        case "consultarcostosdefectos":
-//                            double costosDefectos = defectosDAO.consultarCostosDefectos(defecto);
-//                            response = String.valueOf(costosDefectos);
-//                            break;
-//                        case "consultardetallepiezas":
-//                            String detallePiezas = defectosDAO.consultarDetallePiezas(defecto);
-//                            response = gson.toJson(detallePiezas);
-//                            break;
-//                        default:
-//                            response = "MÃ©todo no reconocido: " + methodName;
-//                    }
-//                } catch (Exception e) {
-//                    response = "Error procesando la solicitud: " + e.getMessage();
-//                }
-                System.out.println("Paquete"+delivery.getProperties().getReplyTo()+" respuesta "+response);
-                channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             };
 
             channel.basicConsume(RPC_QUEUE_NAME, false, deliverCallback, (consumerTag -> {}));
-            System.out.println(" [x] Awaiting RPC requests");
-
-//            // Keep the program running
-//            synchronized (RPCDefectos.class) {
-//                RPCDefectos.class.wait();
-//            }
+            System.out.println(" [x] Esperando peticiones RPC");
     }
 }

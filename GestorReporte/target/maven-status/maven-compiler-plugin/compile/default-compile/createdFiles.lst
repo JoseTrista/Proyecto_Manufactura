@@ -1,6 +1,7 @@
 com\mycompany\rabbitmq\RabbitPublisher.class
 Token\Mensaje.class
 Filtro\FiltroUSA.class
+Cifrado\Desencriptar.class
 com\mycompany\gestorreporte\JakartaRestConfiguration.class
 com\mycompany\gestorreporte\ReportesResource.class
 com\mycompany\gestorreporte\resources\JakartaEE91Resource.class

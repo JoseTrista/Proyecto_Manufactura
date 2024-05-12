@@ -4,6 +4,7 @@
  */
 package com.mycompany.rabbitmq;
 
+import Cifrado.Desencriptar;
 import com.rabbitmq.client.*;
 import java.io.IOException;
 import java.util.UUID;
@@ -45,14 +46,17 @@ public class RabbitPublisher {
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-                response.complete(new String(delivery.getBody(), "UTF-8"));
-            } else {
-                System.out.println("aaaaa");
+                try {
+                    String decryptedMessage = Desencriptar.decrypt(new String(delivery.getBody(), "UTF-8"));
+                    response.complete(decryptedMessage);
+                } catch (Exception e) {
+                    // Aquí se maneja la excepción si el mensaje no se pudo desencriptar
+                    response.completeExceptionally(e);
+                }
             }
         };
-        channel.basicConsume(replyQueueName, true, deliverCallback, consumerTag -> {
-        });
-        String result = response.get();
+        channel.basicConsume(replyQueueName, true, deliverCallback, consumerTag -> {});
+        String result = response.get(); // Esto espera hasta que la promesa se complete
         return result;
     }
 }
